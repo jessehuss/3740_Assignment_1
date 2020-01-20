@@ -18,4 +18,4 @@ cd obj/Release
 Jesse Huss
 
 ## License
-[MIT](https://choosealicense.com/licenses/unlicense/)
+[UNLICENCE](https://choosealicense.com/licenses/unlicense/)
