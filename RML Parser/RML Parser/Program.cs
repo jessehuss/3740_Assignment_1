@@ -13,7 +13,7 @@ namespace RML_Parser
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Jesse's RML Emulator!\n\n" +
-                "This program will allow you to import an RML program in the form of a text file.\n" +
+                "This program will allow you to import an RML program in the form of a .rml file.\n" +
                 "An example of acceptable formatting is as follows:\n\t" +
                 "DEB 1 2 3\n\t" +
                 "INC 2 3\n\t" +
@@ -23,6 +23,7 @@ namespace RML_Parser
             var done = false;
             var inputAccepted = false;            
 
+            // Command
             while (!done)
             {
                 var programAsStrings = ImportAndValidateRML(inputAccepted);
@@ -67,6 +68,7 @@ namespace RML_Parser
                 }
             }
         }
+        // PRETTIFY
         static void PrintRegisters(bool init = false)
         {
             if (init)
@@ -80,6 +82,7 @@ namespace RML_Parser
             }
             Console.WriteLine();
         }
+
         static void ExecuteProgram(List<List<int>> program)
         {
             var PC = 0;
@@ -87,6 +90,7 @@ namespace RML_Parser
 
             while (program[PC].First() != (int)Instruction.HALT)
             {
+                // INSTRUCTION EXECUTION
                 switch (program[PC].First())
                 {
                     case (int)Instruction.INC:
@@ -145,7 +149,7 @@ namespace RML_Parser
 
                 program = new List<string>();
 
-                if (File.Exists(input) && input.EndsWith(".txt"))
+                if (File.Exists(input) && input.EndsWith(".rml"))
                 {
                     using (var sr = new StreamReader(input))
                     {
