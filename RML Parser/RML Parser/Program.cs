@@ -90,19 +90,21 @@ namespace RML_Parser
 
             while (program[PC].First() != (int)Instruction.HALT)
             {
+                if (PC == 11)
+                    Console.Write("");
                 // INSTRUCTION EXECUTION
                 switch (program[PC].First())
                 {
                     case (int)Instruction.INC:
+                        ++_registers[program[PC][1]];
                         PrintRegisters();
-                        _registers[program[PC][1]]++;
                         PC = program[PC][2];
                         break;
                     case (int)Instruction.DEB:
                         if (_registers[program[PC][1]] > 0)
                         {
+                            --_registers[program[PC][1]];
                             PrintRegisters();
-                            _registers[program[PC][1]]--;
                             PC = program[PC][2];
                         }
                         else
