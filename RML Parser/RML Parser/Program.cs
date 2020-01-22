@@ -149,7 +149,7 @@ namespace RML_Parser
                 Console.WriteLine();
 
                 program = new List<string>();
-
+                var path = Path.Combine(Directory.GetCurrentDirectory(), $"..\\..\\..\\..\\RMLPrograms\\{input}");
                 if (File.Exists(input) && input.EndsWith(".rml"))
                 {
                     using (var sr = new StreamReader(input))
