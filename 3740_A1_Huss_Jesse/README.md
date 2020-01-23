@@ -32,6 +32,9 @@ wine /path/to/application.exe
 ## Contents
 - RML Parser/RML Parser/obj/Release/RML Parser.exe #Executable
 - RML Parser/RML Parser/Program.cs #Code
+- RML Files/Divide.rml
+- RML Files/Multiply.rml
+- RML Files/CNT.rml 
 - README.md
 - RML_A1_Report.pdf
 ## Contributors
