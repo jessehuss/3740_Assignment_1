@@ -10,34 +10,30 @@ namespace RML_Parser
     class Program
     {
         public static List<int> _registers {get;set;}
+        public static bool _done = false;
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Jesse's RML Emulator!\n\n" +
                 "This program will allow you to import an RML program in the form of a .rml file.\n" +
+                "Or use on of our pre-defined expamples.\n" +
                 "An example of acceptable formatting is as follows:\n\t" +
                 "DEB 1 2 3\n\t" +
                 "INC 2 3\n\t" +
                 "HALT\n" +
                 "Now without further ado, let us begin!\n\n");
 
-            var done = false;
             var inputAccepted = false;            
 
             // Command
-            while (!done)
+            while (!_done)
             {
-                var programAsStrings = ImportAndValidateRML(inputAccepted);
-                inputAccepted = false;
-
-                var programAsNumberSequence = ConvertRMLToNumberSequence(programAsStrings);
-
                 _registers = new List<int>();
-                InitializeRegisters(programAsNumberSequence);
-
-                ExecuteProgram(programAsNumberSequence);
-            }
-            
-            Console.ReadKey();
+                var program = ImportAndValidateRML(inputAccepted);
+                if (_done)
+                    break;
+                inputAccepted = false;
+                ExecuteProgram(program);
+            }            
         }
         static void InitializeRegisters(List<List<int>> program)
         {
@@ -138,71 +134,204 @@ namespace RML_Parser
 
             return programAsNumberSequence;
         }
-        static List<string> ImportAndValidateRML(bool inputAccepted)
+        static List<List<int>> ImportAndValidateRML(bool inputAccepted)
         {
             var program = new List<string>();
 
             while (!inputAccepted)
             {
-                Console.Write("\nPlease specify a file you would like to import:");
+                Console.Write("\nPlease provide input in the form of the following\n" +
+                    "MULT {int} {int}\n" +
+                    "DIV {int} {int} \n" +
+                    "CNT {int}\n" +
+                    "Or in the form of a filepath\n" +
+                    "Or quit to Quit the emulator\n" +
+                    "Input:");
                 var input = Console.ReadLine();
                 Console.WriteLine();
-
-                program = new List<string>();
-                var path = Path.Combine(Directory.GetCurrentDirectory(), $"..\\..\\..\\..\\RMLPrograms\\{input}");
-                if (File.Exists(input) && input.EndsWith(".rml"))
+                if (input.ToUpper().StartsWith("MULT"))
                 {
-                    using (var sr = new StreamReader(input))
+                    var args = input.Split(' ');
+                    if (args.Length != 3)
                     {
-                        string line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            program.Add(line);
-                        }
+                        Console.WriteLine("Invalid number of arguments...");
+                        inputAccepted = false;
                     }
-                    var programValid = true;
-                    foreach (var instruction in program)
-                    {
-                        Console.Write(instruction);
-
-                        var inst = instruction.Split(' ');
-                        // VALIDATE PROGRAM INSTRUCTIONS: MAX 4 PARTS PER INSTRUCTION, 
-                        // FIRST MUST BE A STRING OF 3-4 CHARS, REMAINING MUST BE INT PARSABLE
-                        if (!(inst.Length > 0 && inst.Length < 5))
-                        {
-                            programValid = false;
-                            Console.Write($" < Error: Incorrect number of arguments at line: {program.IndexOf(instruction) + 1}\n");
-                            continue;
-                        }
-                        if (!new List<string>() { "HALT", "DEB", "INC" }.Contains(inst.First().ToUpper()))
-                        {
-                            programValid = false;
-                            Console.Write($" < Error: Invalid instruction at line: {program.IndexOf(instruction) + 1}\n");
-                            continue;
-                        }
-                        for (int i = 1; i < inst.Length; i++)
-                        {
-                            if (!int.TryParse(inst[i], out int n))
-                            {
-                                programValid = false;
-                                Console.Write($" < Error: Invalid register or instruction line at line: {program.IndexOf(instruction) + 1}, position: {i + 1}");
-                                continue;
-                            }
-                        }
-                        Console.WriteLine();
-                    }
-                    if (programValid)
-                        inputAccepted = true;
                     else
-                        Console.WriteLine("\nRML Program error... Your code will not execute. Please fix any errors and try again...\n");
+                    {
+                        if (!int.TryParse(args[1], out int r1) || !int.TryParse(args[2], out int r2))
+                        {
+                            Console.WriteLine("Invalid: 2nd and 3rd arguments must be integer values");
+                            inputAccepted = false;
+                        }
+                        else
+                        {
+                            _registers.Add(r1);
+                            _registers.Add(r2);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            program = ReadInFile("MULT");
+                            inputAccepted = true;
+                        }
+                    }
+                }
+                else if (input.ToUpper().StartsWith("DIV"))
+                {
+                    var args = input.Split(' ');
+                    if (args.Length != 3)
+                    {
+                        Console.WriteLine("Invalid number of arguments...");
+                        inputAccepted = false;
+                    }
+                    else
+                    {
+                        if (!int.TryParse(args[1], out int r1) || !int.TryParse(args[2], out int r2))
+                        {
+                            Console.WriteLine("Invalid: 2nd and 3rd arguments must be integer values");
+                            inputAccepted = false;
+                        }
+                        else
+                        {
+                            _registers.Add(r1);
+                            _registers.Add(r2);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            program = ReadInFile("DIV");
+                            inputAccepted = true;
+                        }
+                    }
+                }
+                else if (input.ToUpper().StartsWith("CNT"))
+                {
+                    var args = input.Split(' ');
+                    if (args.Length != 2)
+                    {
+                        Console.WriteLine("Invalid number of arguments...");
+                        inputAccepted = false;
+                    }
+                    else
+                    {
+                        if (!int.TryParse(args[1], out int r1))
+                        {
+                            Console.WriteLine("Invalid: 2nd argument must be an integer value");
+                            inputAccepted = false;
+                        }
+                        else
+                        {
+                            _registers.Add(0);
+                            _registers.Add(r1);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            _registers.Add(0);
+                            program = ReadInFile("CNT");
+                            inputAccepted = true;
+                        }
+                    }
+                }
+                else if (input.ToUpper() == "QUIT")
+                {
+                    Console.WriteLine("Goodbye...");
+                    inputAccepted = true;
+                    _done = true;
+                    return null;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid File. Please try again...\n");
+                    program = ManualFile(input);
+                    inputAccepted = program != null;
                 }
             }
 
+            var programAsNumberSequence = ConvertRMLToNumberSequence(program);
+            if (_registers.All(x => x == 0))
+                InitializeRegisters(programAsNumberSequence);
+
+            return programAsNumberSequence;
+        }
+        static List<string> ReadInFile(string input)
+        {
+            var path = "";
+            switch (input.ToUpper())
+            {
+                case "MULT":
+                    path = "..\\..\\RML\\Multiply.rml";
+                    break;
+                case "DIV":
+                    path = "..\\..\\RML\\Divide.rml";
+                    break;
+                case "CNT":
+                    path = "..\\..\\RML\\CNT.rml";
+                    break;
+                default:
+                    break;
+            }
+            var program = new List<string>();
+            using (var sr = new StreamReader(path))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    program.Add(line);
+                }
+            }
             return program;
+        }
+        static List<string> ManualFile(string input)
+        {
+            var program = new List<string>();
+            if (File.Exists(input) && input.EndsWith(".rml"))
+            {
+                using (var sr = new StreamReader(input))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        program.Add(line);
+                    }
+                }
+                var programValid = true;
+                foreach (var instruction in program)
+                {
+                    Console.Write(instruction);
+
+                    var inst = instruction.Split(' ');
+                    // VALIDATE PROGRAM INSTRUCTIONS: MAX 4 PARTS PER INSTRUCTION, 
+                    // FIRST MUST BE A STRING OF 3-4 CHARS, REMAINING MUST BE INT PARSABLE
+                    if (!(inst.Length > 0 && inst.Length < 5))
+                    {
+                        programValid = false;
+                        Console.Write($" < Error: Incorrect number of arguments at line: {program.IndexOf(instruction) + 1}\n");
+                        continue;
+                    }
+                    if (!new List<string>() { "HALT", "DEB", "INC" }.Contains(inst.First().ToUpper()))
+                    {
+                        programValid = false;
+                        Console.Write($" < Error: Invalid instruction at line: {program.IndexOf(instruction) + 1}\n");
+                        continue;
+                    }
+                    for (int i = 1; i < inst.Length; i++)
+                    {
+                        if (!int.TryParse(inst[i], out int n))
+                        {
+                            programValid = false;
+                            Console.Write($" < Error: Invalid register or instruction line at line: {program.IndexOf(instruction) + 1}, position: {i + 1}");
+                            continue;
+                        }
+                    }
+                    Console.WriteLine();
+                }
+                if (programValid)
+                    return program;
+                else
+                    Console.WriteLine("\nRML Program error... Your code will not execute. Please fix any errors and try again...\n");
+            }
+            else
+            {
+                Console.WriteLine("Invalid File. Please try again...\n");
+            }
+            return null;
         }
     }
 
