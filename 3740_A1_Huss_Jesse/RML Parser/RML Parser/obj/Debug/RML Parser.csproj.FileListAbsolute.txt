@@ -1,0 +1,7 @@
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\bin\Debug\RML Parser.exe.config
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\bin\Debug\RML Parser.exe
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\bin\Debug\RML Parser.pdb
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\obj\Debug\RML Parser.csprojAssemblyReference.cache
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\obj\Debug\RML Parser.csproj.CoreCompileInputs.cache
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\obj\Debug\RML Parser.exe
+C:\Users\jesse\Documents\ULETH\SPRING_2020_S3\CPSC3740\Assignments\3740_Assignment_1\RML Parser\RML Parser\obj\Debug\RML Parser.pdb
